@@ -1,10 +1,597 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Teste</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoicismo Brutalista — Jean Hackbarth</title>
+
+    <!-- Fontes do Google: Cinzel (Títulos) e Inter (Texto) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CONTROLES DE ÁUDIO --- */
+        .audio-player-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .audio-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .audio-controls button {
+            background-color: var(--text-main);
+            color: #FFF;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .audio-controls button:hover {
+            background-color: var(--accent-gold);
+        }
+
+        .audio-controls input[type="range"] {
+            accent-color: var(--accent-gold);
+            cursor: pointer;
+            width: 90px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-color: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --text-main: #1A1A1A;
+            --text-sub: #555555;
+            --accent-gold: #C5A059;
+            --accent-hover: #fcf9f2;
+            --border-color: #EAEAEA;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            text-align: center;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #D4AF37, var(--accent-gold), #E6CA65);
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        img {
+            max-width: 390px;
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 2.5rem auto;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+
+        img:hover {
+            transform: translateY(-2px);
+        }
+
+        .faq-item {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: all 0.25s ease;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-gold);
+            box-shadow: var(--shadow-md);
+        }
+
+        .faq-item[open] {
+            border-color: var(--accent-gold);
+        }
+
+        summary {
+            list-style: none;
+            padding: 1.2rem 1.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            user-select: none;
+            transition: background-color 0.2s ease;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .faq-icon {
+            color: var(--accent-gold);
+            font-size: 1.2rem;
+            font-family: 'Cinzel', serif;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .faq-item[open] .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        /* Resposta */
+        .faq-answer {
+            padding: 0 1.5rem 1.2rem 1.5rem;
+            color: var(--text-sub);
+            font-size: 0.95rem;
+            border-top: 1px solid #F5F5F5;
+            margin-top: 0.3rem;
+            padding-top: 1rem;
+            background-color: #FAFAFA;
+        }
+
+        /* --- ESTILOS DO CHATBOT --- */
+        .chat-section {
+            margin-top: 3.5rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .chat-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .chat-box {
+            height: 220px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            background-color: #FAFAFA;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .chat-message {
+            max-width: 80%;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            word-wrap: break-word;
+        }
+
+        .chat-message.user {
+            align-self: flex-end;
+            background-color: var(--text-main);
+            color: #FFFFFF;
+            text-align: right;
+        }
+
+        .chat-message.bot {
+            align-self: flex-start;
+            background-color: #EFEFEF;
+            color: var(--text-main);
+            border-left: 3px solid var(--accent-gold);
+            text-align: left;
+            
+            /* Ajustes para dar espaço à foto do avatar */
+            position: relative;
+            margin-left: 40px; /* Abre espaço à esquerda para a foto */
+        }
+
+        /* Avatar do Bot usando a imagem do Jean */
+        .chat-message.bot::before {
+            content: '';
+            position: absolute;
+            left: -42px; /* Posiciona a foto fora do balão, à esquerda */
+            top: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-image: url('img/jean_bot.png'); /* Caminho da sua foto */
+            background-size: cover;
+            background-position: center;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .chat-message.typing {
+            font-style: italic;
+            color: #888;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input-wrapper input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input-wrapper input:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .chat-input-wrapper button {
+            background-color: var(--text-main);
+            color: #FFF;
+            border: none;
+            padding: 0.75rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .chat-input-wrapper button:hover {
+            background-color: var(--accent-gold);
+        }
+    </style>
 </head>
 <body>
-    <h1>Teste</h1>
+    <!-- CANVAS DAS FOLHAS DE OUTONO -->
+    <canvas id="leafCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999;"></canvas>
+
+    <!-- TOCADOR DE ÁUDIO -->
+    <div class="audio-player-container">
+        <span class="audio-label">Fique de boa</span>
+        <audio id="bgMusic" loop src="/music/music.mp3"></audio>
+        <div class="audio-controls">
+            <button type="button" id="playBtn">▶ Hum.</button>
+            <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.3" title="Volume">
+        </div>
+    </div>
+
+    <h1>Estoicismo brutalista</h1>
+    <h1>(do Jean Hackbarth)</h1>
+    <img src="img/jean.png" alt="O filósofo">
+    <br>
+    <details class="faq-item">
+        <summary>
+            <span>O que é?</span>
+            <span class="faq-icon">+</span>
+        </summary>
+        <div class="faq-answer">
+            É só ficar de boa.
+        </div>
+    </details>
+    <br>
+    <details class="faq-item">
+        <summary>
+            <span>Aconteceu um problema, como devo reagir?</span>
+            <span class="faq-icon">+</span>
+        </summary>
+        <div class="faq-answer">
+            É só não ficar bravo.
+        </div>
+    </details>
+	<br>
+	<details class="faq-item">
+        <summary>
+            <span>Estou mal, o que eu faço?</span>
+            <span class="faq-icon">+</span>
+        </summary>
+        <div class="faq-answer">
+            Isso não é nada.
+        </div>
+    </details>
+		<br>
+	<details class="faq-item">
+        <summary>
+            <span>Estou me sentindo bem, o que isso significa?</span>
+            <span class="faq-icon">+</span>
+        </summary>
+        <div class="faq-answer">
+            Isso não é nada.
+        </div>
+    </details>
+
+    <!-- CHATBOT FAKE -->
+    <section class="chat-section">
+        <h2>Pergunte diretamente ao Jean Hackbarth</h2>
+        <div class="chat-box" id="chatBox">
+            <div class="chat-message bot">Hum.</div>
+        </div>
+        <form class="chat-input-wrapper" id="chatForm">
+            <input type="text" id="userInput" placeholder="Escreva sua pergunta aqui..." autocomplete="off" required>
+            <button type="submit" id="sendBtn">Enviar</button>
+        </form>
+    </section>
+
+    <!-- SCRIPTS -->
+    <script>
+        // --- LÓGICA DO EFEITO DE FOLHAS DE OUTONO ---
+        const canvas = document.getElementById('leafCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let animationFrameId = null;
+        let leaves = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const leafColors = ['#C5A059', '#D4AF37', '#B86B32', '#A0522D', '#CD853F'];
+
+        function createLeaves(count = 25) {
+            leaves = [];
+            for (let i = 0; i < count; i++) {
+                leaves.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 8 + 6,
+                    speedY: Math.random() * 1.2 + 0.8,
+                    speedX: Math.random() * 1.5 + 0.5,
+                    oscillation: Math.random() * 0.05,
+                    angle: Math.random() * Math.PI * 2,
+                    color: leafColors[Math.floor(Math.random() * leafColors.length)],
+                    opacity: Math.random() * 0.5 + 0.4
+                });
+            }
+        }
+
+        function drawLeaf(leaf) {
+            ctx.save();
+            ctx.translate(leaf.x, leaf.y);
+            ctx.rotate(leaf.angle);
+            ctx.globalAlpha = leaf.opacity;
+            ctx.fillStyle = leaf.color;
+
+            ctx.beginPath();
+            ctx.moveTo(0, -leaf.size);
+            ctx.quadraticCurveTo(leaf.size / 2, 0, 0, leaf.size);
+            ctx.quadraticCurveTo(-leaf.size / 2, 0, 0, -leaf.size);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function updateAndDraw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            leaves.forEach(leaf => {
+                leaf.y += leaf.speedY;
+                leaf.x += leaf.speedX + Math.sin(leaf.y * 0.01);
+                leaf.angle += leaf.oscillation;
+
+                if (leaf.y > canvas.height + 20) {
+                    leaf.y = -20;
+                    leaf.x = Math.random() * canvas.width;
+                }
+                if (leaf.x > canvas.width + 20) {
+                    leaf.x = -20;
+                }
+
+                drawLeaf(leaf);
+            });
+
+            animationFrameId = requestAnimationFrame(updateAndDraw);
+        }
+
+        function startLeaves() {
+            if (!animationFrameId) {
+                createLeaves(3);
+                updateAndDraw();
+            }
+        }
+
+        function stopLeaves() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        // --- LÓGICA DO PLAYER DE ÁUDIO ---
+        const bgMusic = document.getElementById('bgMusic');
+        const playBtn = document.getElementById('playBtn');
+        const volumeControl = document.getElementById('volumeControl');
+
+        bgMusic.volume = volumeControl.value;
+
+        playBtn.addEventListener('click', () => {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                playBtn.textContent = '⏸ Pausar';
+                startLeaves();
+            } else {
+                bgMusic.pause();
+                playBtn.textContent = '▶ Hum.';
+                stopLeaves();
+            }
+        });
+
+        bgMusic.addEventListener('ended', () => {
+            stopLeaves();
+            playBtn.textContent = '▶ Hum.';
+        });
+
+        volumeControl.addEventListener('input', (e) => {
+            bgMusic.volume = e.target.value;
+        });
+
+        // --- LÓGICA DO CHATBOT ---
+        const chatForm = document.getElementById('chatForm');
+        const userInput = document.getElementById('userInput');
+        const chatBox = document.getElementById('chatBox');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function cleanText(text) {
+            return text
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^\w\s]/gi, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function getBotResponse(userQuery) {
+    const cleanQuery = cleanText(userQuery);
+    if (!cleanQuery) return "Hum.";
+
+    // Regras já existentes
+    if (cleanQuery === "aconteceu um problema") {
+        return "É só não ficar bravo.";
+    }
+
+    // --- NOVAS REGRAS ---
+    
+    // Para: "Estou bem" ou "Estou me sentindo bem"
+    if (cleanQuery === "estou bem" || cleanQuery === "estou me sentindo bem") {
+        return "Isso não é nada.";
+    }
+
+    // Para: "Estou doente" ou "Não estou bem"
+    if (cleanQuery === "estou doente" || cleanQuery === "nao estou bem") {
+        return "Isso não é nada.";
+    }
+
+    // Varre as perguntas do FAQ na página
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    for (let item of faqItems) {
+        const summaryEl = item.querySelector('summary span');
+        const answerEl = item.querySelector('.faq-answer');
+        
+        if (summaryEl && answerEl) {
+            const cleanQuestion = cleanText(summaryEl.textContent);
+            const rawAnswer = answerEl.textContent.trim();
+
+            if (cleanQuery === cleanQuestion) {
+                return rawAnswer;
+            }
+        }
+    }
+    
+    return "Hum.";
+}
+
+        function scrollToBottom() {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            const userMsg = document.createElement('div');
+            userMsg.className = 'chat-message user';
+            userMsg.textContent = text;
+            chatBox.appendChild(userMsg);
+
+            userInput.value = '';
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+            scrollToBottom();
+
+            const typingMsg = document.createElement('div');
+            typingMsg.className = 'chat-message bot typing';
+            typingMsg.id = 'typingIndicator';
+            typingMsg.textContent = 'Jean está digitando...';
+            chatBox.appendChild(typingMsg);
+            scrollToBottom();
+
+            setTimeout(() => {
+                const indicator = document.getElementById('typingIndicator');
+                if (indicator) indicator.remove();
+
+                const responseText = getBotResponse(text);
+                const botMsg = document.createElement('div');
+                botMsg.className = 'chat-message bot';
+                botMsg.textContent = responseText;
+                
+                chatBox.appendChild(botMsg);
+
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.focus();
+                scrollToBottom();
+            }, 3000);
+        });
+    </script>
 </body>
 </html>
