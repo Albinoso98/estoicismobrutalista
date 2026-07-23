@@ -561,7 +561,7 @@
     
     return "Hum.";
 }
-
+		
         function scrollToBottom() {
             chatBox.scrollTop = chatBox.scrollHeight;
         }
@@ -571,6 +571,7 @@
             const text = userInput.value.trim();
             if (!text) return;
 
+            // 1. Mensagem do usuário entra imediatamente
             const userMsg = document.createElement('div');
             userMsg.className = 'chat-message user';
             userMsg.textContent = text;
@@ -581,29 +582,33 @@
             sendBtn.disabled = true;
             scrollToBottom();
 
-            const typingMsg = document.createElement('div');
-            typingMsg.className = 'chat-message bot typing';
-            typingMsg.id = 'typingIndicator';
-            typingMsg.textContent = 'Jean está digitando...';
-            chatBox.appendChild(typingMsg);
-            scrollToBottom();
-
+            // 2. Aguarda 1 segundo antes de mostrar "Jean está digitando..."
             setTimeout(() => {
-                const indicator = document.getElementById('typingIndicator');
-                if (indicator) indicator.remove();
-
-                const responseText = getBotResponse(text);
-                const botMsg = document.createElement('div');
-                botMsg.className = 'chat-message bot';
-                botMsg.textContent = responseText;
-                
-                chatBox.appendChild(botMsg);
-
-                userInput.disabled = false;
-                sendBtn.disabled = false;
-                userInput.focus();
+                const typingMsg = document.createElement('div');
+                typingMsg.className = 'chat-message bot typing';
+                typingMsg.id = 'typingIndicator';
+                typingMsg.textContent = 'Jean está digitando...';
+                chatBox.appendChild(typingMsg);
                 scrollToBottom();
-            }, 3000);
+
+                // 3. Permanece digitando por 2 segundos antes de mandar a resposta final
+                setTimeout(() => {
+                    const indicator = document.getElementById('typingIndicator');
+                    if (indicator) indicator.remove();
+
+                    const responseText = getBotResponse(text);
+                    const botMsg = document.createElement('div');
+                    botMsg.className = 'chat-message bot';
+                    botMsg.textContent = responseText;
+                    
+                    chatBox.appendChild(botMsg);
+
+                    userInput.disabled = false;
+                    sendBtn.disabled = false;
+                    userInput.focus();
+                    scrollToBottom();
+                }, 3000); // 3 segundos digitando
+            }, 2000); // 2 segundos de pausa inicial
         });
     </script>
 </body>
