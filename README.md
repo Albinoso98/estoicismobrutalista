@@ -1,1 +1,1 @@
-# estoicismobrutalista.github.io
+Entenda a filosofia Estoicista Brutalista.
